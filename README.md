@@ -51,8 +51,8 @@ result = execute_alma_bytecode(bytecode, debug=True)
 
 | Opcode | Instruction  | Description                    |
 | ------ | ------------ | ------------------------------ |
-| 0x01   | `PUSH_INT`   | Push 4-byte signed integer     |
-| 0x02   | `PUSH_FLOAT` | Push 4-byte float              |
+| 0x01   | `PUSH_INT`   | Push 32-bit signed integer     |
+| 0x02   | `PUSH_FLOAT` | Push 32-bit float              |
 | 0x05   | `FSUB`       | Float subtraction              |
 | 0x10   | `FADD`       | Float addition                 |
 | 0x11   | `FMUL`       | Float multiplication           |
