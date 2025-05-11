@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ALMA in Browser</title>
+</head>
+<body>
+    <pre id="output"></pre>
+    <script type="module">
+        import { runAlma } from './alma_browser.js';
+
+        const almaScript = `
+        let x = 8
+        let y = 2
+        push x
+        push y
+        div
+        ret_float
+        `;
+
+        runAlma(almaScript).then(result => {
+            document.getElementById('output').textContent =
+                `ALMA output:\nInt: ${result.int}\nFloat: ${result.float}`;
+        });
+    </script>
+</body>
+</html>
