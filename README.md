@@ -11,6 +11,7 @@ The rapid turnover of consumer hardware, driven by market cycles and planned obs
 - Deterministic bytecode format for reproducible computation
 - ALMA-script language with macros and conditionals
 - WebAssembly runtime targeting underpowered or distributed devices
+- JS interpreter for in-browser execution of `.alma` scripts
 
 ## Example ALMA Script
 
@@ -25,14 +26,21 @@ ret_float
 
 Expected output: `4.0`
 
+---
+
 ## Architecture
 
-ALMA consists of two components:
+ALMA consists of three key components:
 
-* A Rust-based VM compiled to `stack_vm.wasm` using the `wasm32-unknown-unknown` target.
-* A Python interpreter (`alma_interpreter.py`) that compiles ALMA-script into bytecode and executes it using Wasmtime.
+* A Rust-based virtual machine compiled to `stack_vm.wasm` using the `wasm32-unknown-unknown` target.
+* A Python interpreter (`alma_interpreter.py`) that parses ALMA-script and executes bytecode using Wasmtime.
+* A JavaScript-based interpreter (`alma_browser.js`) that compiles ALMA-script in the browser and runs it via WebAssembly.
 
-## Usage (Python)
+---
+
+## Usage
+
+### Python Example
 
 ```python
 from alma_interpreter import parse_alma_script, execute_alma_bytecode
@@ -46,6 +54,29 @@ ret_float
 bytecode = parse_alma_script(script)
 result = execute_alma_bytecode(bytecode, debug=True)
 ```
+
+### Browser Example (JS)
+
+```html
+<script type="module">
+  import { runAlma } from './alma_browser.js';
+
+  const almaScript = `
+    let x = 10
+    let y = 2
+    push x
+    push y
+    div
+    ret_float
+  `;
+
+  runAlma(almaScript).then(result => {
+    console.log("ALMA Output:", result);
+  });
+</script>
+```
+
+---
 
 ## Supported Instructions
 
@@ -64,44 +95,54 @@ result = execute_alma_bytecode(bytecode, debug=True)
 | 0xF0   | `RET_INT`    | Return top of stack as int     |
 | 0xF1   | `RET_FLOAT`  | Return top of stack as float   |
 
+---
+
 ## Philosophy
 
 ALMA is designed to reduce electronic waste by enabling the use of older hardware as useful compute agents in distributed scientific systems. By combining a predictable VM with a low-level but expressive instruction set, ALMA provides a foundation for transparent, auditable, and platform-neutral computing.
 
+---
+
 ## Rationale for a Custom Bytecode System
 
-Compared to dynamic scripting (`eval`/`loadstring` in Lua or Python), ALMA offers:
+Compared to dynamic scripting (`eval`/`loadstring`), ALMA offers:
 
 * **Security**: No dynamic parsing; deterministic opcodes.
 * **Portability**: WASM execution on any modern device or browser.
-* **Formality**: Full instruction set definable in formal methods.
-* **Energy Efficiency**: Predictable, low-overhead runtime.
-* **Scientific Reproducibility**: Bytecode guarantees result stability.
+* **Formality**: Fully definable instruction set and VM.
+* **Energy Efficiency**: Minimal overhead for embedded and edge nodes.
+* **Scientific Reproducibility**: Bytecode ensures consistent results across platforms.
 
-This supports goals of distributed, low-trust scientific computing.
+---
 
 ## Use Cases
 
-* Vectorized AI math on edge nodes
+* Vectorized AI math on edge or browser nodes
 * Bioinformatics pipelines
-* Reproducible numerical experiments
-* Cooperative compute over LANs of mixed hardware
-* Educational demonstrations of compilers and VMs
-* WASM execution on smart devices, thin clients, and public infrastructure
+* Reproducible scientific experiments
+* Peer-to-peer distributed computation
+* Education (VM architecture, compiler design)
+* Web-based citizen science platforms
+
+---
 
 ## Future Work
 
 * Loop and branch control
-* Distributed execution protocol
-* Parameterized macros
-* Energy-per-instruction benchmarking
+* Distributed execution protocol (with fallback and retries)
+* Parameterized macros and template blocks
+* Browser-hosted task queues
+* ALMA-to-LLVM transpiler for backend acceleration
+* ALMA Jupyter kernel for notebooks
+
+---
 
 ## Conclusion
 
-ALMA is a step toward more efficient, accessible scientific computing. By lowering runtime complexity and removing dependency on full interpreters, it provides a robust base for deterministic and scalable task execution across devices. Through ALMA, idle or legacy hardware can contribute directly to modern research.
+ALMA is a step toward more efficient, accessible scientific computing. Its design encourages equitable access to computation by enabling devices of all classes — from outdated laptops to modern browsers — to participate in scientific workloads. With both Python and JavaScript runtimes, ALMA is flexible enough to serve as the foundation for cooperative computing at global scale.
 
-The Python implementation is only the beginning. ALMA's portability through WASM positions it as a universal compute layer, capable of running securely across thousands of heterogeneous endpoints. Its small footprint and open design offer a foundation for equitable, globally distributed scientific computation.
+---
 
 ## License
 
-Apache 2.0 License. Developed by Zacharie Fortin 2025
+Apache 2.0 License. Developed by Zacharie Fortin, 2025.
